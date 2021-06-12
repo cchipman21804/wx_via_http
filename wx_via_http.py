@@ -36,10 +36,13 @@ import urllib.request
 
 # Concatenate rooturl and airport code to obtain full url
 rooturl = "http://tgftp.nws.noaa.gov/data/observations/metar/decoded/"
-kged = "KGED.TXT"
-ksby = "KSBY.TXT"
-kwal = "KWAL.TXT"
-koxb = "KOXB.TXT"
+kged = "KGED.TXT" # Delaware Coastal Airport, Georgetown, Sussex County, DE
+ksby = "KSBY.TXT" # Wicomico Regional Airport, Salisbury, Wicomico County, MD
+kwal = "KWAL.TXT" # Wallops Flight Facility, Wallops Island, Accomac County, VA
+koxb = "KOXB.TXT" # Ocean City Municipal Airport, Worcester County, MD
+kdov = "KDOV.TXT" # Dover Air Force Base, Dover, Kent County, DE
+kilg = "KILG.TXT" # New Castle County Airport, New Castle, New Castle County, DE
+k33n = "K33N.TXT" # Delaware Airpark, Smyrna, Kent County, DE
 
 # Ocean City Airport does not have temperature, dew point, & RH data
 # koxb = "KOXB.TXT"
@@ -52,6 +55,9 @@ while validInput == False:
     print("2 ... Wicomico Regional Airport, Salisbury, Wicomico County, MD")
     print("3 ... Wallops Flight Facility, Wallops Island, Accomac County, VA")
     print("4 ... Ocean City Municipal Airport, Ocean City, Worcester County, MD")
+    print("5 ... Dover Air Force Base, Dover, Kent County, DE")
+    print("6 ... New Castle County Airport, New Castle, New Castle County, DE")
+    print("7 ... Delaware Airpark, Smyrna, Kent County, DE")
     #    print("n ... Ocean City Municipal Airport, Ocean City, Worcester County, MD")
     airport = input("\nPlease select an area wx forecast or 'e' to EXIT: ")
 
@@ -75,6 +81,18 @@ while validInput == False:
 
     elif airport == '4':
         url = rooturl + koxb
+        validInput = True  # leave while loop
+
+    elif airport == '5':
+        url = rooturl + kdov
+        validInput = True  # leave while loop
+
+    elif airport == '6':
+        url = rooturl + kilg
+        validInput = True  # leave while loop
+
+    elif airport == '7':
+        url = rooturl + k33n
         validInput = True  # leave while loop
 
 #    elif airport == 'n':
@@ -134,6 +152,11 @@ temperatureStartIdx = wxdata.find("Temperature: ")
 temperatureEndIdx = wxdata.find("Dew Point: ") - 2
 temperature = wxdata[temperatureStartIdx:temperatureEndIdx]
 
+# Heat index:
+heatindexStartIdx = wxdata.find("Heat index: ")
+heatindexEndIdx = wxdata.find("Dew Point: ") - 2
+heatIndex = wxdata[heatindexStartIdx:heatindexEndIdx]
+
 # Dew Point:
 dewPointStartIdx = wxdata.find("Dew Point: ")
 dewPointEndIdx = wxdata.find("Relative Humidity: ") - 2
@@ -156,19 +179,30 @@ pressureTendencyEndIdx = wxdata.find("ob: ") - 2
 pressureTendency = wxdata[pressureTendencyStartIdx:pressureTendencyEndIdx]
 
 # Uncomment wxdata to debug:
-# print("\n")
-# print(wxdata)
-# print("\n")
+#print("\nRaw http response:")
+#print(wxdata)
 
-print(f"{header}")
-print(f"{localDate}")
-print(f"{localTime}")
+print("\n")
+print(f"Station Name: {header}")
+print(f"Observation Date: {localDate}")
+print(f"Observation Time: {localTime}")
 print(f"{windSpeed}")
 print(f"{visibility}")
 print(f"{skyCondx}")
 print(f"{temperature}")
+
+if heatIndex == '':
+    print("Heat Index not avail")
+else:
+    print(f"{heatIndex}")
+
 print(f"{dewPoint}")
 print(f"{relativeHumidity}")
 print(f"{pressure}")
-print(f"{pressureTendency}")
-# print("\n")
+
+if pressureTendency =='':
+    print("Pressure Tendency not avail")
+else:
+    print(f"{pressureTendency}")
+
+print("\n")
